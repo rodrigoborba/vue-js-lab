@@ -1,4 +1,4 @@
-# minhas-tarefas
+# minhastarefas-frontend
 
 ## Project setup
 ```
