@@ -25,7 +25,7 @@ export default {
   computed: {
     tarefasAbertas() {
       // https://vuex.vuejs.org/guide/getters.html#method-style-access
-      return this.$store.getters.tarefasPorStatus('ABERTA')      
+      return this.$store.getters.tarefasPorStatus('ABERTO')      
     },
     tarefasEmAndamento() {
       return this.$store.getters.tarefasPorStatus('EM_ANDAMENTO')      
@@ -37,6 +37,9 @@ export default {
       return this.$store.getters.tarefasPorStatus('CANCELADA')      
     },
   },
+  mounted(){
+    this.$store.dispatch('carregarTarefas')
+  }
 };
 </script>
 

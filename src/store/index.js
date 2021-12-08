@@ -6,28 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    tarefas: [
-      {
-        id: 1,
-        descricao: "Tarefa X",
-        status: "ABERTA",
-      },
-      {
-        id: 2,
-        descricao: "Tarefa Z",
-        status: "EM_ANDAMENTO",
-      },
-      {
-        id: 3,
-        descricao: "Tarefa W",
-        status: "CONCLUIDA",
-      },
-      {
-        id: 4,
-        descricao: "Tarefa Y",
-        status: "CANCELADA",
-      },
-    ],
+    tarefas: [],
     usuario: null
   },
   mutations: {
@@ -40,7 +19,10 @@ export default new Vuex.Store({
       state.usuario = null 
       delete Vue.prototype.$http.defaults.headers.common['Authorization']
       localStorage.removeItem('__minhastarefas_user')
-    }
+    },
+    setTarefas( state, response ) {
+      state.tarefas = response.data._embedded.tarefaResponseList
+    },
   },
   actions: {
     login({ commit}, usuario) {
@@ -57,7 +39,27 @@ export default new Vuex.Store({
     logout({commit }){
       commit('limparUsuario')
       router.push({name: 'Login'})
-    }
+    }, 
+    carregarUsuario({ commit }) {
+      const usuarioString= localStorage.getItem('__minhastarefas_user')
+
+      if (usuarioString) {
+        const usuario = JSON.parse(usuarioString)
+        commit('setUsuario', usuario)
+        Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${usuario.token}`
+      }
+    },
+    carregarTarefas({ commit }) {
+
+      Vue.prototype.$http
+      .get('http://localhost:8081/minhastarefas/tarefa')
+      .then(response => {
+        commit('setTarefas',  response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    },
 
   },
   getters: {
