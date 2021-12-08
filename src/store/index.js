@@ -7,7 +7,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     tarefas: [],
-    usuario: null
+    usuario: null,
+    categorias: [],
+    showDialog: false,
+    tarefaEdicao: null,
   },
   mutations: {
     setUsuario(state, usuario){
@@ -23,6 +26,16 @@ export default new Vuex.Store({
     setTarefas( state, response ) {
       state.tarefas = response.data._embedded.tarefaResponseList
     },
+    setCategorias( state, response ) {
+      // state.categorias = response.data._embedded.tarefaCategoriaResponseList
+      state.categorias = response.data
+    },
+    setDialog( state, value ) {
+      state.showDialog = value
+    },
+    setTarefaEdicao(state, tarefa) {
+      state.tarefaEdicao = tarefa
+    }
   },
   actions: {
     login({ commit}, usuario) {
@@ -71,6 +84,65 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
+    salvarTarefa({ dispatch, state }, tarefa) {
+      tarefa.usuarioId = state.usuario.id
+
+      Vue.prototype.$http
+      .post('http://localhost:8081/minhastarefas/tarefa', tarefa)
+      .then(response => {
+        if (response.status === 201)
+          dispatch('carregarTarefas')
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
+    },
+    carregarCategorias({ commit }) {
+      Vue.prototype.$http
+      .get('http://localhost:8081/minhastarefas/categoria')
+      .then(response => {
+        if (response.status === 200)
+          commit('setCategorias', response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    },
+    atualizaDialog({ commit }, value) {
+      commit('setDialog', value)
+    },
+    editarTarefa({commit, dispatch}, tarefa) {
+      commit('setTarefaEdicao', tarefa)
+      dispatch('atualizaDialog', true)
+    },
+    limparForm({commit}) {
+      commit('setTarefaEdicao', {})
+    },
+    excluirCategoria({dispatch}, { id }) {
+      Vue.prototype.$http
+      .delete(`http://localhost:8081/minhastarefas/categoria/${id}`)
+      .then(response => {
+        if (response.status === 204)
+        dispatch('carregarCategorias')
+      })
+      .catch(error => {
+        alert('Não foi possível excluir esta categoria')
+        console.log(error)
+      })
+    },
+    salvarCategoria({dispatch}, categoria) {
+      Vue.prototype.$http
+      .post(`http://localhost:8081/minhastarefas/categoria`, categoria)
+      .then(response => {
+        if (response.status === 201)
+        dispatch('carregarCategorias')
+      })
+      .catch(error => {
+        alert('Erro ao salvar categoria')
+        console.log(error)
+      })
+    }
   },
   getters: {
      // https://vuex.vuejs.org/guide/getters.html#method-style-access
@@ -81,6 +153,21 @@ export default new Vuex.Store({
     },
     usuario(state) {
       return state.usuario
+    },
+    categorias(state) {
+      return state.categorias.map(categoria => {
+        return {
+          ...categoria
+        }
+      })
+    },
+    showDialog(state) {
+      return state.showDialog
+    },
+    tarefaEdicao( state ) {
+      return {
+        ...state.tarefaEdicao
+      }
     }
   },
   modules: {

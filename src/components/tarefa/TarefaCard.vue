@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" outlined>
-    <v-card-title> {{ tarefa.descricao }} </v-card-title>
+    <v-card-title @click="editarTarefa" class="descricao"> {{ tarefa.descricao }} </v-card-title>
 
     <v-card-actions>
       <v-btn ico class="primary" @click="iniciar" v-if="showIniciar"><v-icon>mdi-play</v-icon></v-btn>
@@ -44,4 +44,7 @@ export default {
 </script>
 
 <style>
+.descricao:hover {
+  cursor: pointer;
+}
 </style>

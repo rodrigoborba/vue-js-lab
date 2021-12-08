@@ -22,6 +22,18 @@ export default {
   components: {
     Coluna, TarefaDialog
   },
+  data() {
+    return {
+      tarefas: [],
+    }
+  },
+  methods: {
+    tarefasPorStatus(status) {
+      return this.tarefas.filter(
+        tarefa => { return tarefa.status == status }
+      )
+    },
+  },
   computed: {
     tarefasAbertas() {
       // https://vuex.vuejs.org/guide/getters.html#method-style-access
