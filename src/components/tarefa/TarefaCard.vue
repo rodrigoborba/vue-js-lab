@@ -17,24 +17,27 @@ export default {
     ],
     computed: {
         showIniciar() {
-            return this.tarefa.status == 'ABERTA'
+            return this.tarefa._links.iniciar
         },
         showConcluir() {
-            return this.tarefa.status == 'ABERTA' || this.tarefa.status == 'EM_ANDAMENTO'
+            return this.tarefa._links.concluir
         },
         showCancelar() {
-            return this.tarefa.status == 'ABERTA' || this.tarefa.status == 'EM_ANDAMENTO'
+            return this.tarefa._links.cancelar
         },
     },
     methods: {
         iniciar() {
-          console.log('inciar')
+            this.$store.dispatch('executarAcao', this.tarefa._links.iniciar.href)
         },
         concluir() {
-            console.log('concluir')
+            this.$store.dispatch('executarAcao', this.tarefa._links.concluir.href)
         },
         cancelar() {
-            console.log('cancelar')
+            this.$store.dispatch('executarAcao', this.tarefa._links.cancelar.href)
+        },
+        editarTarefa() {
+            this.$store.dispatch('editarTarefa', this.tarefa)
         }
     }
 };

@@ -60,7 +60,17 @@ export default new Vuex.Store({
         console.log(error)
       })
     },
-
+    executarAcao({ dispatch }, url) {
+      Vue.prototype.$http
+        .put(url)
+        .then((response) => {
+          if (response.status === 200)
+            dispatch('carregarTarefas')
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
   getters: {
      // https://vuex.vuejs.org/guide/getters.html#method-style-access
